@@ -10,7 +10,8 @@ cd products-app
 
 ### Instale as dependências PHP
 ```bash
-composer install
+docker-compose up -d
+docker-compose exec laravel.test composer install
 ```
 
 ### Configure o ambiente
@@ -44,6 +45,9 @@ cp .env.example .env
 ```
 
 Abra seu navegador e acesse: http://localhost
+
+email: test@example.com
+password: password
 
 ### Gerenciamento de containers
 ```bash
