@@ -2,6 +2,13 @@
 
 Com Laravel 11, Livewire 3 e Tailwind CSS.
 
+Devido a inconsistências no ambiente de desenvolvimento com Laravel Sail que não foram possíveis de serem identificadas, após concluir todas as etapas de instalação e realizar login no sistema, execute o seguinte comando:
+
+### Otimizar o Autoloader
+```bash
+./vendor/bin/sail composer dump-autoload
+```
+
 ### Clone o repositório
 ```bash
 git clone https://github.com/caiquebispo/products-app.git
@@ -47,12 +54,6 @@ cp .env.example .env
 ```bash
 ./vendor/bin/sail npm run build
 ```
-
-### 10. Compile os assets
-```bash
-./vendor/bin/sail composer dum-autoload
-```
-
 Abra seu navegador e acesse: http://localhost
 
 email: test@example.com
