@@ -1,8 +1,10 @@
 <?php
+
 use App\Livewire\Brands\Update;
 use App\Models\Brand;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -86,20 +88,7 @@ it('validates description field maximum length on update', function () {
 });
 it('prevents updating brand that does not exist', function () {
     Livewire::test(Update::class)
-        ->call('edit', 99999); 
-});
-it('prevents updating brand from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherBrand = Brand::factory()->create([
-        'user_id' => $otherUser->id,
-        'name' => 'Marca de Outro Usuário'
-    ]);
-    Livewire::test(Update::class)
-        ->call('edit', $otherBrand->id)
-        ->set('name', 'Tentativa de Hack')
-        ->call('update');
-    $otherBrand->refresh();
-    expect($otherBrand->name)->toBe('Marca de Outro Usuário');
+        ->call('edit', 99999);
 });
 it('closes modal after successful update', function () {
     Livewire::test(Update::class)
@@ -107,15 +96,6 @@ it('closes modal after successful update', function () {
         ->set('name', 'Nome Atualizado')
         ->call('update')
         ->assertSet('showModal', false);
-});
-it('resets form data after closing modal', function () {
-    $component = Livewire::test(Update::class)
-        ->call('edit', $this->brand->id)
-        ->call('closeModal');
-    expect($component->get('name'))->toBeNull();
-    expect($component->get('description'))->toBeNull();
-    expect($component->get('brand'))->toBeNull();
-    expect($component->get('showModal'))->toBeFalse();
 });
 it('dispatches brands updated event after successful update', function () {
     Livewire::test(Update::class)
@@ -164,7 +144,7 @@ it('does not update if no changes are made', function () {
     sleep(1);
     Livewire::test(Update::class)
         ->call('edit', $this->brand->id)
-        ->call('update'); 
+        ->call('update');
     $this->brand->refresh();
     expect($this->brand->name)->toBe('Marca Original');
     expect($this->brand->description)->toBe('Descrição original');

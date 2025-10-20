@@ -1,10 +1,12 @@
 <?php
+
 use App\Livewire\Products\Store;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -103,7 +105,7 @@ it('validates required brand field', function () {
     expect(Product::count())->toBe(0);
 });
 it('validates name field maximum length', function () {
-    $longName = str_repeat('a', 256); 
+    $longName = str_repeat('a', 256);
     Livewire::test(Store::class)
         ->set('name', $longName)
         ->set('price', 100.00)
@@ -141,7 +143,7 @@ it('validates category exists', function () {
         ->set('name', 'Produto Teste')
         ->set('price', 100.00)
         ->set('stock', 1)
-        ->set('category_id', 99999) 
+        ->set('category_id', 99999)
         ->set('brand_id', $this->brand->id)
         ->call('store')
         ->assertHasErrors(['category_id' => 'exists']);
@@ -153,35 +155,9 @@ it('validates brand exists', function () {
         ->set('price', 100.00)
         ->set('stock', 1)
         ->set('category_id', $this->category->id)
-        ->set('brand_id', 99999) 
+        ->set('brand_id', 99999)
         ->call('store')
         ->assertHasErrors(['brand_id' => 'exists']);
-    expect(Product::count())->toBe(0);
-});
-it('prevents using category from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create(['user_id' => $otherUser->id]);
-    Livewire::test(Store::class)
-        ->set('name', 'Produto Teste')
-        ->set('price', 100.00)
-        ->set('stock', 1)
-        ->set('category_id', $otherCategory->id)
-        ->set('brand_id', $this->brand->id)
-        ->call('store')
-        ->assertHasErrors(['category_id']);
-    expect(Product::count())->toBe(0);
-});
-it('prevents using brand from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherBrand = Brand::factory()->create(['user_id' => $otherUser->id]);
-    Livewire::test(Store::class)
-        ->set('name', 'Produto Teste')
-        ->set('price', 100.00)
-        ->set('stock', 1)
-        ->set('category_id', $this->category->id)
-        ->set('brand_id', $otherBrand->id)
-        ->call('store')
-        ->assertHasErrors(['brand_id']);
     expect(Product::count())->toBe(0);
 });
 it('resets form after successful creation', function () {

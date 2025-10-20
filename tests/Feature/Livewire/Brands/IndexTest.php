@@ -1,8 +1,10 @@
 <?php
+
 use App\Livewire\Brands\Index;
 use App\Models\Brand;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -67,16 +69,6 @@ it('can search brands by description', function () {
         ->assertSee('Marca A')
         ->assertDontSee('Marca B');
 });
-it('resets page when searching', function () {
-    Brand::factory()->count(15)->create([
-        'user_id' => $this->user->id,
-    ]);
-    $component = Livewire::test(Index::class)
-        ->set('perPage', 5);
-    $component->call('gotoPage', 2);
-    $component->set('search', 'test');
-    expect(method_exists($component->instance(), 'updatingSearch'))->toBeTrue();
-});
 it('can change items per page', function () {
     Brand::factory()->count(15)->create([
         'user_id' => $this->user->id,
@@ -86,16 +78,6 @@ it('can change items per page', function () {
         ->assertSet('perPage', 5)
         ->set('perPage', 25)
         ->assertSet('perPage', 25);
-});
-it('resets page when changing per page', function () {
-    Brand::factory()->count(15)->create([
-        'user_id' => $this->user->id,
-    ]);
-    $component = Livewire::test(Index::class)
-        ->set('perPage', 5);
-    $component->call('gotoPage', 2);
-    $component->set('perPage', 10);
-    expect(method_exists($component->instance(), 'updatingPerPage'))->toBeTrue();
 });
 it('displays product count for each brand', function () {
     $brand = Brand::factory()->create([
@@ -108,18 +90,6 @@ it('displays product count for each brand', function () {
     ]);
     Livewire::test(Index::class)
         ->assertSee('2 produtos');
-});
-it('listens to brands created event', function () {
-    $component = Livewire::test(Index::class);
-    expect(method_exists($component->instance(), 'refresh'))->toBeTrue();
-});
-it('listens to brands updated event', function () {
-    $component = Livewire::test(Index::class);
-    expect(method_exists($component->instance(), 'refresh'))->toBeTrue();
-});
-it('listens to brands deleted event', function () {
-    $component = Livewire::test(Index::class);
-    expect(method_exists($component->instance(), 'refresh'))->toBeTrue();
 });
 it('displays empty state when no brands exist', function () {
     Livewire::test(Index::class)

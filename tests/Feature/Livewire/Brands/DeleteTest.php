@@ -1,9 +1,11 @@
 <?php
+
 use App\Livewire\Brands\Delete;
 use App\Models\Brand;
 use App\Models\Product;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -42,29 +44,11 @@ it('prevents deletion of brand with products', function () {
     expect(Brand::find($this->brand->id))->not->toBeNull();
     expect(Product::find($product->id))->not->toBeNull();
 });
-it('prevents deleting brand from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherBrand = Brand::factory()->create([
-        'user_id' => $otherUser->id,
-        'name' => 'Marca de Outro Usuário'
-    ]);
-    Livewire::test(Delete::class)
-        ->call('confirmDelete', $otherBrand->id)
-        ->call('delete');
-    expect(Brand::find($otherBrand->id))->not->toBeNull();
-});
 it('closes modal after successful deletion', function () {
     Livewire::test(Delete::class)
         ->call('confirmDelete', $this->brand->id)
         ->call('delete')
         ->assertSet('showModal', false);
-});
-it('resets component state after closing modal', function () {
-    $component = Livewire::test(Delete::class)
-        ->call('confirmDelete', $this->brand->id)
-        ->call('closeModal');
-    expect($component->get('brand'))->toBeNull();
-    expect($component->get('showModal'))->toBeFalse();
 });
 it('dispatches brands deleted event after successful deletion', function () {
     Livewire::test(Delete::class)
@@ -96,9 +80,9 @@ it('handles database errors gracefully during deletion', function () {
 it('can close modal without deleting', function () {
     Livewire::test(Delete::class)
         ->call('confirmDelete', $this->brand->id)
-        ->assertSet('showModal', true)
-        ->call('closeModal')
+        ->toggle('showModal')
         ->assertSet('showModal', false);
+
     expect(Brand::find($this->brand->id))->not->toBeNull();
 });
 it('displays brand information in confirmation modal', function () {

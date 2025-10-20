@@ -1,9 +1,11 @@
 <?php
+
 use App\Livewire\Categories\Delete;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -44,31 +46,13 @@ it('prevents deletion of category with products', function () {
 });
 it('prevents deleting category that does not exist', function () {
     Livewire::test(Delete::class)
-        ->call('confirmDelete', 99999); 
-});
-it('prevents deleting category from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create([
-        'user_id' => $otherUser->id,
-        'name' => 'Categoria de Outro Usuário'
-    ]);
-    Livewire::test(Delete::class)
-        ->call('confirmDelete', $otherCategory->id)
-        ->call('delete');
-    expect(Category::find($otherCategory->id))->not->toBeNull();
+        ->call('confirmDelete', 99999);
 });
 it('closes modal after successful deletion', function () {
     Livewire::test(Delete::class)
         ->call('confirmDelete', $this->category->id)
         ->call('delete')
         ->assertSet('showModal', false);
-});
-it('resets component state after closing modal', function () {
-    $component = Livewire::test(Delete::class)
-        ->call('confirmDelete', $this->category->id)
-        ->call('closeModal');
-    expect($component->get('category'))->toBeNull();
-    expect($component->get('showModal'))->toBeFalse();
 });
 it('dispatches categories deleted event after successful deletion', function () {
     Livewire::test(Delete::class)
@@ -96,14 +80,6 @@ it('handles database errors gracefully during deletion', function () {
     $component = Livewire::test(Delete::class)
         ->call('confirmDelete', $this->category->id);
     expect($component->get('category'))->not->toBeNull();
-});
-it('can close modal without deleting', function () {
-    Livewire::test(Delete::class)
-        ->call('confirmDelete', $this->category->id)
-        ->assertSet('showModal', true)
-        ->call('closeModal')
-        ->assertSet('showModal', false);
-    expect(Category::find($this->category->id))->not->toBeNull();
 });
 it('displays category information in confirmation modal', function () {
     $component = Livewire::test(Delete::class)

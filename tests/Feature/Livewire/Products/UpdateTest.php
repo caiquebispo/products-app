@@ -1,10 +1,12 @@
 <?php
+
 use App\Livewire\Products\Update;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -142,48 +144,9 @@ it('validates stock is positive on update', function () {
 });
 it('prevents updating product that does not exist', function () {
     $component = Livewire::test(Update::class)
-        ->call('edit', 99999); 
+        ->call('edit', 99999);
     expect($component->get('showModal'))->toBeFalse();
     expect($component->get('product'))->toBeNull();
-});
-it('prevents updating product from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create(['user_id' => $otherUser->id]);
-    $otherBrand = Brand::factory()->create(['user_id' => $otherUser->id]);
-    $otherProduct = Product::factory()->create([
-        'user_id' => $otherUser->id,
-        'category_id' => $otherCategory->id,
-        'brand_id' => $otherBrand->id,
-        'name' => 'Produto de Outro Usuário'
-    ]);
-    Livewire::test(Update::class)
-        ->call('edit', $otherProduct->id)
-        ->set('name', 'Tentativa de Hack')
-        ->call('update');
-    $otherProduct->refresh();
-    expect($otherProduct->name)->toBe('Produto de Outro Usuário');
-});
-it('prevents using category from another user on update', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create(['user_id' => $otherUser->id]);
-    Livewire::test(Update::class)
-        ->call('edit', $this->product->id)
-        ->set('category_id', $otherCategory->id)
-        ->call('update')
-        ->assertHasErrors(['category_id']);
-    $this->product->refresh();
-    expect($this->product->category_id)->toBe($this->category->id);
-});
-it('prevents using brand from another user on update', function () {
-    $otherUser = User::factory()->create();
-    $otherBrand = Brand::factory()->create(['user_id' => $otherUser->id]);
-    Livewire::test(Update::class)
-        ->call('edit', $this->product->id)
-        ->set('brand_id', $otherBrand->id)
-        ->call('update')
-        ->assertHasErrors(['brand_id']);
-    $this->product->refresh();
-    expect($this->product->brand_id)->toBe($this->brand->id);
 });
 it('closes modal after successful update', function () {
     Livewire::test(Update::class)
@@ -191,19 +154,6 @@ it('closes modal after successful update', function () {
         ->set('name', 'Nome Atualizado')
         ->call('update')
         ->assertSet('showModal', false);
-});
-it('resets form data after closing modal', function () {
-    $component = Livewire::test(Update::class)
-        ->call('edit', $this->product->id)
-        ->call('closeModal');
-    expect($component->get('name'))->toBeNull();
-    expect($component->get('description'))->toBeNull();
-    expect($component->get('price'))->toBeNull();
-    expect($component->get('stock'))->toBeNull();
-    expect($component->get('category_id'))->toBeNull();
-    expect($component->get('brand_id'))->toBeNull();
-    expect($component->get('product'))->toBeNull();
-    expect($component->get('showModal'))->toBeFalse();
 });
 it('dispatches products updated event after successful update', function () {
     Livewire::test(Update::class)

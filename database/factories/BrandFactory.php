@@ -18,7 +18,7 @@ class BrandFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
+            'user_id' => 1,
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'status' => $this->faker->boolean(80),

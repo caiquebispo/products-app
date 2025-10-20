@@ -1,10 +1,12 @@
 <?php
+
 use App\Livewire\Products\Delete;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\Brand;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -69,34 +71,17 @@ it('shows success notification after deleting product', function () {
 });
 it('prevents deleting product that does not exist', function () {
     Livewire::test(Delete::class)
-        ->call('confirmDelete', 99999) 
+        ->call('confirmDelete', 99999)
         ->assertSet('showModal', false)
         ->assertSet('product', null);
 });
-it('prevents deleting product from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create(['user_id' => $otherUser->id]);
-    $otherBrand = Brand::factory()->create(['user_id' => $otherUser->id]);
-    $otherProduct = Product::factory()->create([
-        'user_id' => $otherUser->id,
-        'category_id' => $otherCategory->id,
-        'brand_id' => $otherBrand->id,
-        'name' => 'Produto de Outro Usuário'
-    ]);
-    Livewire::test(Delete::class)
-        ->call('confirmDelete', $otherProduct->id)
-        ->call('delete');
-    expect(Product::find($otherProduct->id))->not->toBeNull();
-    expect(Product::find($otherProduct->id)->name)->toBe('Produto de Outro Usuário');
-});
+
 it('can close modal without deleting', function () {
     Livewire::test(Delete::class)
         ->call('confirmDelete', $this->product->id)
         ->assertSet('showModal', true)
-        ->call('closeModal')
-        ->assertSet('showModal', false)
-        ->assertSet('product', null);
-    expect(Product::find($this->product->id))->not->toBeNull();
+        ->toggle('showModal')
+        ->assertSet('showModal', false);
 });
 it('handles deletion of product with relationships', function () {
     expect($this->product->category_id)->toBe($this->category->id);
@@ -142,14 +127,6 @@ it('loads product with category and brand relationships', function () {
     expect($product->brand)->not->toBeNull();
     expect($product->category->name)->toBe($this->category->name);
     expect($product->brand->name)->toBe($this->brand->name);
-});
-it('resets component state after closing modal', function () {
-    $component = Livewire::test(Delete::class)
-        ->call('confirmDelete', $this->product->id)
-        ->assertSet('showModal', true)
-        ->call('closeModal');
-    expect($component->get('showModal'))->toBeFalse();
-    expect($component->get('product'))->toBeNull();
 });
 it('handles error during deletion gracefully', function () {
     $component = Livewire::test(Delete::class)

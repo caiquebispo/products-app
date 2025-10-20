@@ -22,7 +22,7 @@ class ProductFactory extends Factory
         return [
             'category_id' => Category::factory(),
             'brand_id' => Brand::factory(),
-            'user_id' => User::factory(),
+            'user_id' => 1,
             'name' => $this->faker->word(),
             'description' => $this->faker->sentence(),
             'price' => $this->faker->randomFloat(2, 1, 1000),

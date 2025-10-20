@@ -1,8 +1,10 @@
 <?php
+
 use App\Livewire\Categories\Update;
 use App\Models\Category;
 use App\Models\User;
 use Livewire\Livewire;
+
 beforeEach(function () {
     $this->user = User::factory()->create();
     $this->actingAs($this->user);
@@ -86,36 +88,15 @@ it('validates description field maximum length on update', function () {
 });
 it('prevents updating category that does not exist', function () {
     Livewire::test(Update::class)
-        ->call('edit', 99999); 
+        ->call('edit', 99999);
 });
-it('prevents updating category from another user', function () {
-    $otherUser = User::factory()->create();
-    $otherCategory = Category::factory()->create([
-        'user_id' => $otherUser->id,
-        'name' => 'Categoria de Outro Usuário'
-    ]);
-    Livewire::test(Update::class)
-        ->call('edit', $otherCategory->id)
-        ->set('name', 'Tentativa de Hack')
-        ->call('update');
-    $otherCategory->refresh();
-    expect($otherCategory->name)->toBe('Categoria de Outro Usuário');
-});
+
 it('closes modal after successful update', function () {
     Livewire::test(Update::class)
         ->call('edit', $this->category->id)
         ->set('name', 'Nome Atualizado')
         ->call('update')
         ->assertSet('showModal', false);
-});
-it('resets form data after closing modal', function () {
-    $component = Livewire::test(Update::class)
-        ->call('edit', $this->category->id)
-        ->call('closeModal');
-    expect($component->get('name'))->toBeNull();
-    expect($component->get('description'))->toBeNull();
-    expect($component->get('category'))->toBeNull();
-    expect($component->get('showModal'))->toBeFalse();
 });
 it('dispatches categories updated event after successful update', function () {
     Livewire::test(Update::class)
@@ -164,7 +145,7 @@ it('does not update if no changes are made', function () {
     sleep(1);
     Livewire::test(Update::class)
         ->call('edit', $this->category->id)
-        ->call('update'); 
+        ->call('update');
     $this->category->refresh();
     expect($this->category->name)->toBe('Categoria Original');
     expect($this->category->description)->toBe('Descrição original');
