@@ -45,7 +45,12 @@ cp .env.example .env
 
 ### 9. Compile os assets
 ```bash
-./vendor/bin/sail npm run dev
+./vendor/bin/sail npm run build
+```
+
+### 10. Compile os assets
+```bash
+./vendor/bin/sail composer dum-autoload
 ```
 
 Abra seu navegador e acesse: http://localhost
