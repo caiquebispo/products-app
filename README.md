@@ -22,7 +22,7 @@ docker run --rm \
     -v "$(pwd):/var/www/html" \
     -w /var/www/html \
     laravelsail/php82-composer:latest \
-    composer install --ignore-platform-reqs
+    bash -c "composer install --ignore-platform-reqs && composer dump-autoload"
 ```
 
 ### Configure o ambiente
